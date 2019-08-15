@@ -1078,6 +1078,12 @@ foreign import ccall unsafe "Z3_is_eq_ast"
                  -> Ptr Z3_ast
                  -> IO Z3_bool
 
+-- | Reference: <https://z3prover.github.io/api/html/group__capi.html#gab512c338c328f47d1facd470e752f049>
+foreign import ccall unsafe "Z3_get_ast_hash"
+    z3_get_ast_hash :: Ptr Z3_context
+                    -> Ptr Z3_ast
+                    -> IO CUInt
+
 -- | Reference: <http://z3prover.github.io/api/html/group__capi.html#ga7d9262dc6e79f2aeb23fd4a383589dda>
 foreign import ccall unsafe "Z3_get_as_array_func_decl"
     z3_get_as_array_func_decl :: Ptr Z3_context

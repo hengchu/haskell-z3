@@ -39,7 +39,7 @@ spec = around withContext $ do
           Z3.getInt ctx ast;
         assert $ x == i
 
-  context "AST Equality and Substitution" $ do
+  context "AST Equality, Hash and Substitution" $ do
     specify "isEqAST" $ \ctx ->
       monadicIO $ do
         (r1, r2) <- run $ do
@@ -57,6 +57,21 @@ spec = around withContext $ do
           return (r1, r2)
         assert r1
         assert (not r2)
+
+    specify "getASTHash" $ \ctx ->
+      monadicIO $ do
+        r <- run $ do
+          x1 <- Z3.mkFreshIntVar ctx "x1"
+          x2 <- Z3.mkFreshIntVar ctx "x2"
+
+          s  <- Z3.mkAdd ctx [x1, x2]
+          s' <- Z3.mkAdd ctx [x1, x2]
+
+          hash <- Z3.getASTHash ctx s
+          hash' <- Z3.getASTHash ctx s'
+
+          return $ hash == hash'
+        assert r
 
     specify "substitute" $ \ctx ->
       monadicIO $ do

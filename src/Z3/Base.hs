@@ -323,6 +323,7 @@ module Z3.Base (
   , getFuncs
   , isAsArray
   , isEqAST
+  , getASTHash
   , addFuncInterp
   , addConstInterp
   , getAsArrayFuncDecl
@@ -2144,6 +2145,9 @@ isAsArray = liftFun1 z3_is_as_array
 
 isEqAST :: Context -> AST -> AST -> IO Bool
 isEqAST = liftFun2 z3_is_eq_ast
+
+getASTHash :: Context -> AST -> IO Word
+getASTHash = liftFun1 z3_get_ast_hash
 
 addFuncInterp :: Context -> Model -> FuncDecl -> AST -> IO FuncInterp
 addFuncInterp = liftFun3 z3_add_func_interp

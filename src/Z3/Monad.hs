@@ -280,6 +280,7 @@ module Z3.Monad
   , getFuncs
   , isAsArray
   , isEqAST
+  , getASTHash
   , addFuncInterp
   , addConstInterp
   , getAsArrayFuncDecl
@@ -1757,6 +1758,9 @@ isAsArray = liftFun1 Base.isAsArray
 
 isEqAST :: MonadZ3 z3 => AST -> AST -> z3 Bool
 isEqAST = liftFun2 Base.isEqAST
+
+getASTHash :: MonadZ3 z3 => AST -> z3 Word
+getASTHash = liftFun1 Base.getASTHash
 
 addFuncInterp :: MonadZ3 z3 => Model -> FuncDecl -> AST -> z3 FuncInterp
 addFuncInterp = liftFun3 Base.addFuncInterp
