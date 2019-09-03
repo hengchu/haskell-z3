@@ -68,6 +68,7 @@ module Z3.Base (
   , FuncEntry
   , Params
   , Solver
+  , Optimizer
   , SortKind(..)
   , ASTKind(..)
   , Tactic
