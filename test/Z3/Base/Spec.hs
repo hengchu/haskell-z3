@@ -89,6 +89,39 @@ spec = around withContext $ do
           Z3.isEqAST ctx s34 s34'
         assert r
 
+    specify "optimizer" $ \ctx ->
+      monadicIO $ do
+      (r, val) <- run $ do
+        x1Label <- Z3.mkFreshBoolVar ctx "x1"
+        x1 <- Z3.mkFreshRealVar ctx "x1"
+        x2Label <- Z3.mkFreshBoolVar ctx "x2"
+        x2 <- Z3.mkFreshRealVar ctx "x2"
+
+        opt <- Z3.mkOptimizer ctx
+
+        one <- Z3.mkRational ctx 1
+        x1Ge1 <- Z3.mkGe ctx x1 one
+        x2Ge1 <- Z3.mkGe ctx x2 one
+
+        Z3.optimizerAssertAndTrack ctx opt x1Ge1 x1Label
+        Z3.optimizerAssertAndTrack ctx opt x2Ge1 x2Label
+
+        s <- Z3.mkAdd ctx [x1, x2]
+        Z3.optimizerMinimize ctx opt s
+        r <- Z3.optimizerCheck ctx opt []
+
+        case r of
+          Z3.Sat -> do
+            model <- Z3.optimizerGetModel ctx opt
+            val <- Z3.evalReal ctx model s
+            return (r, val)
+          _ -> return (r, Nothing)
+
+      assert (r == Z3.Sat)
+      case val of
+        Just val' -> assert (val' == 2)
+        Nothing   -> assert False
+
   context "Bit-vectors" $ do
 
     specify "mkBvmul" $ \ctx ->
