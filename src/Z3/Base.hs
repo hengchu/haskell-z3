@@ -416,6 +416,27 @@ module Z3.Base (
   , solverGetUnsatCore
   , solverGetReasonUnknown
   , solverToString
+
+  -- * Optimizers
+  , mkOptimizer
+  , optimizerAssertCnstr
+  , optimizerAssertAndTrack
+  , optimizerAssertSoft
+  , optimizerMaximize
+  , optimizerMinimize
+  , optimizerPush
+  , optimizerPop
+  , optimizerCheck
+  , optimizerGetReasonUnknown
+  , optimizerGetModel
+  , optimizerGetUnsatCore
+  , optimizerSetParams
+  , optimizerGetLower
+  , optimizerGetUpper
+  , optimizerGetLowerAsVector
+  , optimizerGetUpperAsVector
+  , optimizerToString
+
   -- ** Helpers
   , solverCheckAndGetModel
   ) where
@@ -531,6 +552,12 @@ newtype Params = Params { unParams :: ForeignPtr Z3_params }
 -- A(n) (incremental) solver, possibly specialized by a particular tactic
 -- or logic.
 newtype Solver = Solver { unSolver :: ForeignPtr Z3_solver }
+    deriving Eq
+
+-- | A Z3 optimizer engine.
+--
+-- An optimizer, possibly specialized by a particular tactic or logic.
+newtype Optimizer = Optimizer { unOptimizer :: ForeignPtr Z3_optimize }
     deriving Eq
 
 -- | Result of a satisfiability check.
@@ -2801,6 +2828,67 @@ solverGetReasonUnknown = liftFun1 z3_solver_get_reason_unknown
 solverToString :: Context -> Solver -> IO String
 solverToString = liftFun1 z3_solver_to_string
 
+---------------------------------------------------------------------
+-- ** Optimizers
+
+mkOptimizer :: Context -> IO Optimizer
+mkOptimizer = liftFun0 z3_mk_optimize
+
+optimizerAssertCnstr :: Context -> Optimizer -> AST -> IO ()
+optimizerAssertCnstr = liftFun2 z3_optimize_assert
+
+optimizerAssertAndTrack :: Context -> Optimizer -> AST -> AST -> IO ()
+optimizerAssertAndTrack = liftFun3 z3_optimize_assert_and_track
+
+optimizerAssertSoft :: Context -> Optimizer -> AST -> String -> Symbol -> IO Int
+optimizerAssertSoft = liftFun4 z3_optimize_assert_soft
+
+optimizerMaximize :: Context -> Optimizer -> AST -> IO Int
+optimizerMaximize = liftFun2 z3_optimize_maximize
+
+optimizerMinimize :: Context -> Optimizer -> AST -> IO Int
+optimizerMinimize = liftFun2 z3_optimize_minimize
+
+optimizerPush :: Context -> Optimizer -> IO ()
+optimizerPush = liftFun1 z3_optimize_push
+
+optimizerPop :: Context -> Optimizer -> IO ()
+optimizerPop = liftFun1 z3_optimize_pop
+
+optimizerCheck :: Context -> Optimizer -> [AST] -> IO Result
+optimizerCheck ctx optimizer assump =
+  marshal z3_optimize_check ctx $ \f ->
+    h2c optimizer $ \optimizerPtr ->
+    marshalArrayLen assump $ \assumpNum assumpArr ->
+      f optimizerPtr assumpNum assumpArr
+
+optimizerGetReasonUnknown :: Context -> Optimizer -> IO String
+optimizerGetReasonUnknown = liftFun1 z3_optimize_get_reason_unknown
+
+optimizerGetModel :: Context -> Optimizer -> IO Model
+optimizerGetModel = liftFun1 z3_optimize_get_model
+
+optimizerGetUnsatCore :: Context -> Optimizer -> IO [AST]
+optimizerGetUnsatCore = liftFun1 z3_optimize_get_unsat_core
+
+optimizerSetParams :: Context -> Optimizer -> Params -> IO ()
+optimizerSetParams = liftFun2 z3_optimize_set_params
+
+optimizerGetLower :: Context -> Optimizer -> Int -> IO AST
+optimizerGetLower = liftFun2 z3_optimize_get_lower
+
+optimizerGetUpper :: Context -> Optimizer -> Int -> IO AST
+optimizerGetUpper = liftFun2 z3_optimize_get_upper
+
+optimizerGetLowerAsVector :: Context -> Optimizer -> Int -> IO [AST]
+optimizerGetLowerAsVector = liftFun2 z3_optimize_get_lower_as_vector
+
+optimizerGetUpperAsVector :: Context -> Optimizer -> Int -> IO [AST]
+optimizerGetUpperAsVector = liftFun2 z3_optimize_get_upper_as_vector
+
+optimizerToString :: Context -> Optimizer -> IO String
+optimizerToString = liftFun1 z3_optimize_to_string
+
 -------------------------------------------------
 -- ** Helpers
 
@@ -3033,6 +3121,10 @@ instance Marshal Solver (Ptr Z3_solver) where
   c2h = mkC2hRefCount Solver z3_solver_inc_ref z3_solver_dec_ref
   h2c slv = withForeignPtr (unSolver slv)
 
+instance Marshal Optimizer (Ptr Z3_optimize) where
+  c2h = mkC2hRefCount Optimizer z3_optimize_inc_ref z3_optimize_dec_ref
+  h2c opt = withForeignPtr (unOptimizer opt)
+
 instance Marshal Tactic (Ptr Z3_tactic) where
   c2h = mkC2hRefCount Tactic z3_tactic_inc_ref z3_tactic_dec_ref
   h2c tac = withForeignPtr (unTactic tac)
@@ -3074,6 +3166,13 @@ liftFun3 :: (Marshal ah ac, Marshal bh bc, Marshal ch cc, Marshal rh rc) =>
 liftFun3 f c x y z = h2c x $ \x1 -> h2c y $ \y1 -> h2c z $ \z1 ->
   toHsCheckError c $ \cPtr -> f cPtr x1 y1 z1
 {-# INLINE liftFun3 #-}
+
+liftFun4 :: (Marshal ah ac, Marshal bh bc, Marshal ch cc, Marshal dh dc, Marshal rh rc) =>
+              (Ptr Z3_context -> ac -> bc -> cc -> dc -> IO rc) ->
+              Context -> ah -> bh -> ch -> dh -> IO rh
+liftFun4 f c x y z w = h2c x $ \x1 -> h2c y $ \y1 -> h2c z $ \z1 -> h2c w $ \w1 ->
+  toHsCheckError c $ \cPtr -> f cPtr x1 y1 z1 w1
+{-# INLINE liftFun4 #-}
 
 ---------------------------------------------------------------------
 -- Utils
