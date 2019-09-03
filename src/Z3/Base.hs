@@ -2841,7 +2841,7 @@ optimizerAssertCnstr = liftFun2 z3_optimize_assert
 optimizerAssertAndTrack :: Context -> Optimizer -> AST -> AST -> IO ()
 optimizerAssertAndTrack = liftFun3 z3_optimize_assert_and_track
 
-optimizerAssertSoft :: Context -> Optimizer -> AST -> String -> Symbol -> IO Int
+optimizerAssertSoft :: Context -> Optimizer -> AST -> String -> Maybe Symbol -> IO Int
 optimizerAssertSoft = liftFun4 z3_optimize_assert_soft
 
 optimizerMaximize :: Context -> Optimizer -> AST -> IO Int
