@@ -3120,6 +3120,7 @@ instance Marshal ConstructorList (Ptr Z3_constructor_list) where
 
 instance Marshal Solver (Ptr Z3_solver) where
   c2h = mkC2hRefCount Solver z3_solver_inc_ref z3_solver_dec_ref
+  {-# INLINE h2c #-}
   h2c slv = withForeignPtr (unSolver slv)
 
 instance Marshal Optimizer (Ptr Z3_optimize) where
@@ -3138,6 +3139,7 @@ instance Marshal Goal (Ptr Z3_goal) where
   c2h = mkC2hRefCount Goal z3_goal_inc_ref z3_goal_dec_ref
   h2c goa = withForeignPtr (unGoal goa)
 
+{-# INLINE marshal #-}
 marshal :: Marshal rh rc => (Ptr Z3_context -> t) ->
               Context -> (t -> IO rc) -> IO rh
 marshal f c cont = toHsCheckError c $ \cPtr -> cont $ f cPtr
