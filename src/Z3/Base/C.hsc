@@ -1394,22 +1394,22 @@ foreign import ccall "Z3_solver_to_string"
 ---------------------------------------------------------------------
 -- * Optimizer
 
-foreign import ccall unsafe "Z3_mk_optimize"
+foreign import ccall "Z3_mk_optimize"
   z3_mk_optimize :: Ptr Z3_context -> IO (Ptr Z3_optimize)
 
-foreign import ccall unsafe "Z3_optimize_inc_ref"
+foreign import ccall "Z3_optimize_inc_ref"
   z3_optimize_inc_ref :: Ptr Z3_context -> Ptr Z3_optimize -> IO ()
 
-foreign import ccall unsafe "Z3_optimize_dec_ref"
+foreign import ccall "Z3_optimize_dec_ref"
   z3_optimize_dec_ref :: Ptr Z3_context -> Ptr Z3_optimize -> IO ()
 
-foreign import ccall unsafe "Z3_optimize_assert"
+foreign import ccall "Z3_optimize_assert"
   z3_optimize_assert :: Ptr Z3_context -> Ptr Z3_optimize -> Ptr Z3_ast -> IO ()
 
-foreign import ccall unsafe "Z3_optimize_assert_and_track"
+foreign import ccall "Z3_optimize_assert_and_track"
   z3_optimize_assert_and_track :: Ptr Z3_context -> Ptr Z3_optimize -> Ptr Z3_ast -> Ptr Z3_ast -> IO ()
 
-foreign import ccall unsafe "Z3_optimize_assert_soft"
+foreign import ccall "Z3_optimize_assert_soft"
   z3_optimize_assert_soft :: Ptr Z3_context
                           -> Ptr Z3_optimize
                           -> Ptr Z3_ast
@@ -1417,46 +1417,46 @@ foreign import ccall unsafe "Z3_optimize_assert_soft"
                           -> Ptr Z3_symbol
                           -> IO CUInt
 
-foreign import ccall unsafe "Z3_optimize_maximize"
+foreign import ccall "Z3_optimize_maximize"
   z3_optimize_maximize :: Ptr Z3_context -> Ptr Z3_optimize -> Ptr Z3_ast -> IO CUInt
 
-foreign import ccall unsafe "Z3_optimize_minimize"
+foreign import ccall "Z3_optimize_minimize"
   z3_optimize_minimize :: Ptr Z3_context -> Ptr Z3_optimize -> Ptr Z3_ast -> IO CUInt
 
-foreign import ccall unsafe "Z3_optimize_push"
+foreign import ccall "Z3_optimize_push"
   z3_optimize_push :: Ptr Z3_context -> Ptr Z3_optimize -> IO ()
 
-foreign import ccall unsafe "Z3_optimize_pop"
+foreign import ccall "Z3_optimize_pop"
   z3_optimize_pop :: Ptr Z3_context -> Ptr Z3_optimize -> IO ()
 
-foreign import ccall unsafe "Z3_optimize_check"
+foreign import ccall "Z3_optimize_check"
   z3_optimize_check :: Ptr Z3_context -> Ptr Z3_optimize -> CUInt -> Ptr (Ptr Z3_ast) -> IO Z3_lbool
 
-foreign import ccall unsafe "Z3_optimize_get_reason_unknown"
+foreign import ccall "Z3_optimize_get_reason_unknown"
   z3_optimize_get_reason_unknown :: Ptr Z3_context -> Ptr Z3_optimize -> IO Z3_string
 
-foreign import ccall unsafe "Z3_optimize_get_model"
+foreign import ccall "Z3_optimize_get_model"
   z3_optimize_get_model :: Ptr Z3_context -> Ptr Z3_optimize -> IO (Ptr Z3_model)
 
-foreign import ccall unsafe "Z3_optimize_get_unsat_core"
+foreign import ccall "Z3_optimize_get_unsat_core"
   z3_optimize_get_unsat_core :: Ptr Z3_context -> Ptr Z3_optimize -> IO (Ptr Z3_ast_vector)
 
-foreign import ccall unsafe "Z3_optimize_set_params"
+foreign import ccall "Z3_optimize_set_params"
   z3_optimize_set_params :: Ptr Z3_context -> Ptr Z3_optimize -> Ptr Z3_params -> IO ()
 
-foreign import ccall unsafe "Z3_optimize_get_lower"
+foreign import ccall "Z3_optimize_get_lower"
   z3_optimize_get_lower :: Ptr Z3_context -> Ptr Z3_optimize -> CUInt -> IO (Ptr Z3_ast)
 
-foreign import ccall unsafe "Z3_optimize_get_upper"
+foreign import ccall "Z3_optimize_get_upper"
   z3_optimize_get_upper :: Ptr Z3_context -> Ptr Z3_optimize -> CUInt -> IO (Ptr Z3_ast)
 
-foreign import ccall unsafe "Z3_optimize_get_lower_as_vector"
+foreign import ccall "Z3_optimize_get_lower_as_vector"
   z3_optimize_get_lower_as_vector :: Ptr Z3_context -> Ptr Z3_optimize -> CUInt -> IO (Ptr Z3_ast_vector)
 
-foreign import ccall unsafe "Z3_optimize_get_upper_as_vector"
+foreign import ccall "Z3_optimize_get_upper_as_vector"
   z3_optimize_get_upper_as_vector :: Ptr Z3_context -> Ptr Z3_optimize -> CUInt -> IO (Ptr Z3_ast_vector)
 
-foreign import ccall unsafe "Z3_optimize_to_string"
+foreign import ccall "Z3_optimize_to_string"
   z3_optimize_to_string :: Ptr Z3_context -> Ptr Z3_optimize -> IO Z3_string
 
 ---------------------------------------------------------------------
